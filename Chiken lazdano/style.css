@@ -1,0 +1,76 @@
+/* Custom Styling & Utilities */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.nav-tab.active {
+    background-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+.nav-tab:not(.active) {
+    color: #4b5563;
+}
+.nav-tab:not(.active):hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.cat-btn.active {
+    background-color: #111827;
+    color: #ffffff;
+}
+.cat-btn:not(.active) {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+.cat-btn:not(.active):hover {
+    background-color: #e5e7eb;
+}
+
+/* Custom Scrollbar for WA Log Console */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #030712;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #1f2937;
+    border-radius: 4px;
+}
+
+/* LOGIN & BRANDING */
+.login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 28px 16px; background: radial-gradient(circle at top right, #fee2e2 0, transparent 35%),
+    linear-gradient(135deg, #fff7ed 0%, #f3f4f6 55%, #fee2e2 100%);
+}
+.login-card { width: 100%; max-width: 420px; background: #fff; padding: 34px; border: 1px solid #fee2e2;
+    border-radius: 24px; box-shadow: 0 24px 70px rgba(127, 29, 29, .13); text-align: center; }
+.login-logo { width: 62px; height: 62px; display: grid; place-items: center; margin: 0 auto 16px;
+    border-radius: 18px; color: #fff; background: linear-gradient(135deg, #dc2626, #991b1b);
+    font-size: 25px; font-weight: 900; box-shadow: 0 9px 20px rgba(220, 38, 38, .25); }
+.login-kicker { color: #9ca3af; font-size: 10px; font-weight: 800; letter-spacing: .25em; }
+.login-brand { margin-top: 3px; color: #111827; font-size: 25px; font-weight: 900; letter-spacing: -.04em; }
+.login-brand span { color: #dc2626; }
+.login-slogan { margin-top: 6px; color: #b45309; font-size: 13px; font-weight: 800; }
+.login-description { margin: 18px 0 22px; color: #6b7280; font-size: 12px; line-height: 1.6; }
+.login-form { text-align: left; display: grid; gap: 8px; }
+.login-form label { margin-top: 5px; color: #374151; font-size: 12px; font-weight: 700; }
+.login-form input { width: 100%; padding: 12px 13px; border: 1px solid #e5e7eb; border-radius: 11px; outline: none; font-size: 13px; }
+.login-form input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, .1); }
+.login-submit { margin-top: 9px; padding: 13px; border-radius: 11px; background: #dc2626; color: white; font-size: 13px; font-weight: 800; transition: .2s; }
+.login-submit:hover { background: #b91c1c; transform: translateY(-1px); }
+.login-error { min-height: 16px; color: #dc2626; font-size: 11px; font-weight: 600; }
+.login-demo { margin-top: 18px; padding: 11px; border-radius: 10px; background: #fff7ed; color: #92400e; font-size: 11px; line-height: 1.7; }
+.login-note { margin-top: 16px; color: #9ca3af; font-size: 10px; }
+@media (max-width: 480px) { .login-card { padding: 27px 22px; } }

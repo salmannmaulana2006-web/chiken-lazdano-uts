@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiken Lazdano | Sistem Pemesanan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS External -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans antialiased">
+    <!-- LOGIN SCREEN: demo front-end only -->
+    <section id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo">CL</div>
+            <p class="login-kicker">WELCOME TO</p>
+            <h1 class="login-brand">CHIKEN <span>LAZDANO</span></h1>
+            <p class="login-slogan">“Renyah Rasanya, Mudah Pesannya!”</p>
+            <p class="login-description">Masuk untuk mengelola pemesanan, produk, transaksi, dan pengantaran.</p>
+            <form id="loginForm" class="login-form">
+                <label for="loginUsername">Username</label>
+                <input id="loginUsername" type="text" autocomplete="username" placeholder="Masukkan username" required>
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+                <p id="loginError" class="login-error" role="alert"></p>
+                <button type="submit" class="login-submit">Masuk ke Website <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+            <div class="login-demo"><strong>Akun demo:</strong> admin<br><strong>Password:</strong> Lazdano123</div>
+            <p class="login-note">Demo UTS • Front-end only • Data dummy</p>
+        </div>
+    </section>
+    <div id="appShell" class="hidden">
+
+    <!-- Top Navigation -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <div class="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md shadow-red-200">
+                            CL
+                        </div>
+                        <div>
+                            <span class="font-extrabold text-xl text-gray-900 tracking-tight">Chiken <span class="text-red-600">Lazdano</span></span>
+                            <span class="block text-xs text-gray-500 font-medium -mt-1">Renyah Rasanya, Mudah Pesannya!</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button id="cartBtn" class="relative p-2 text-gray-600 hover:text-red-600 focus:outline-none transition-colors">
+                        <i class="fa-solid fa-shopping-bag text-xl"></i>
+                        <span id="cartBadge" class="hidden absolute top-0 right-0 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white">0</span>
+                    </button>
+                    <div class="h-6 w-px bg-gray-200"></div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-700 font-bold flex items-center justify-center text-sm border border-orange-200">
+                            A
+                        </div>
+                        <span id="signedInUser" class="text-sm font-semibold text-gray-700 hidden sm:inline">Admin</span>
+                        <button onclick="logout()" class="ml-2 text-xs font-bold text-red-600 hover:text-red-800" title="Keluar"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Navigation Tabs -->
+        <div class="mb-6 overflow-x-auto pb-2 scrollbar-hide">
+            <nav class="flex space-x-2 bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm min-w-max" id="moduleNav">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-chart-line"></i> 1. Dashboard Admin
+                </button>
+                <button onclick="switchTab('pos')" id="tab-pos" class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-utensils"></i> 2. Pemesanan
+                </button>
+                <button onclick="switchTab('products')" id="tab-products" class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-boxes-stacked"></i> 3. Produk & Harga
+                </button>
+                <button onclick="switchTab('transactions')" id="tab-transactions" class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-receipt"></i> 4. Transaksi & Bayar
+                </button>
+                <button onclick="switchTab('delivery')" id="tab-delivery" class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-brands fa-whatsapp"></i> 5. Pengantaran & WA
+                </button>
+                <button onclick="switchTab('users')" id="tab-users" class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all">
+                    <i class="fa-solid fa-vial-circle-check"></i> 6. User & Pengujian
+                </button>
+            </nav>
+        </div>
+
+        <!-- MODULE 1: DASHBOARD ADMIN -->
+        <div id="module-dashboard" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Total Pendapatan</p>
+                        <h3 class="text-2xl font-black text-gray-900 mt-1" id="dashTotalRevenue">Rp 0</h3>
+                        <span class="text-xs text-green-600 font-semibold flex items-center gap-1 mt-1">
+                            <i class="fa-solid fa-arrow-up text-xs"></i> +12.5% minggu ini
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Total Pesanan</p>
+                        <h3 class="text-2xl font-black text-gray-900 mt-1" id="dashTotalOrders">0</h3>
+                        <span class="text-xs text-blue-600 font-semibold flex items-center gap-1 mt-1">
+                            <i class="fa-solid fa-clock"></i> Terupdate otomatis
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Menu Aktif</p>
+                        <h3 class="text-2xl font-black text-gray-900 mt-1" id="dashTotalProducts">0</h3>
+                        <span class="text-xs text-gray-500 font-medium mt-1 block">Tersedia di katalog</span>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-drumstick-bite"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase text-gray-400 tracking-wider">Pengantaran Aktif</p>
+                        <h3 class="text-2xl font-black text-gray-900 mt-1" id="dashActiveDelivery">0</h3>
+                        <span class="text-xs text-purple-600 font-semibold flex items-center gap-1 mt-1">
+                            <i class="fa-solid fa-truck-fast"></i> Kurir bertugas
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-lg text-gray-900">Aktivitas Transaksi Terbaru</h2>
+                        <button onclick="switchTab('transactions')" class="text-xs text-red-600 font-bold hover:underline">Lihat Semua</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-xs font-semibold text-gray-400 uppercase border-b border-gray-100">
+                                    <th class="pb-3">ID Order</th>
+                                    <th class="pb-3">Pelanggan</th>
+                                    <th class="pb-3">Total</th>
+                                    <th class="pb-3">Status</th>
+                                    <th class="pb-3">Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashRecentOrdersTable" class="text-sm divide-y divide-gray-100">
+                                <!-- Dynamic Render -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h2 class="font-bold text-lg text-gray-900 mb-4">Status Pesanan Hari Ini</h2>
+                        <div class="relative h-48 flex items-center justify-center">
+                            <canvas id="orderChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-2 text-center text-xs">
+                        <div class="bg-amber-50 p-2 rounded-lg">
+                            <span class="text-amber-700 font-semibold block">Pending</span>
+                            <span class="font-bold text-sm text-amber-900" id="chartCountPending">0</span>
+                        </div>
+                        <div class="bg-green-50 p-2 rounded-lg">
+                            <span class="text-green-700 font-semibold block">Selesai/Lunas</span>
+                            <span class="font-bold text-sm text-green-900" id="chartCountDone">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 2: PEMESANAN PELANGGAN -->
+        <div id="module-pos" class="tab-content hidden">
+            <div class="flex flex-col md:flex-row gap-4 mb-6 justify-between items-center bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex gap-2 overflow-x-auto w-full md:w-auto scrollbar-hide" id="categoryFilter">
+                    <button onclick="filterCategory('All')" class="cat-btn active px-4 py-2 rounded-xl text-sm font-semibold transition-all">Semua Menu</button>
+                    <button onclick="filterCategory('Geprek')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">Ayam Geprek</button>
+                    <button onclick="filterCategory('Crispy')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">Ayam Crispy</button>
+                    <button onclick="filterCategory('Sides')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">Ala Carte / Sides</button>
+                    <button onclick="filterCategory('Minuman')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all">Minuman</button>
+                </div>
+                <div class="w-full md:w-64 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" id="searchMenu" oninput="renderCustomerMenu()" placeholder="Cari menu favorit..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-red-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="customerMenuGrid">
+                <!-- Dynamic Menu Cards -->
+            </div>
+        </div>
+
+        <!-- MODULE 3: MANAJEMEN PRODUK DAN HARGA -->
+        <div id="module-products" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Katalog Produk & Harga Lazdano</h2>
+                        <p class="text-xs text-gray-500">Kelola stok, ketersediaan, dan harga produk secara langsung.</p>
+                    </div>
+                    <button onclick="openProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md shadow-red-200 transition-all">
+                        <i class="fa-solid fa-plus"></i> Tambah Menu Baru
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+                                <th class="p-3.5 rounded-l-xl">Gambar</th>
+                                <th class="p-3.5">Nama Produk</th>
+                                <th class="p-3.5">Kategori</th>
+                                <th class="p-3.5">Harga (Rp)</th>
+                                <th class="p-3.5">Status Stok</th>
+                                <th class="p-3.5 rounded-r-xl text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productManagementTable" class="divide-y divide-gray-100 text-sm">
+                            <!-- Dynamic Products -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 4: TRANSAKSI DAN PEMBAYARAN -->
+        <div id="module-transactions" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Riwayat Transaksi & Verifikasi Pembayaran</h2>
+                        <p class="text-xs text-gray-500">Daftar pesanan masuk, pembayaran via QRIS/Transfer/COD.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-xs bg-amber-100 text-amber-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                            <i class="fa-solid fa-clock"></i> Pending: <span id="txnPendingBadge">0</span>
+                        </span>
+                        <span class="text-xs bg-green-100 text-green-800 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                            <i class="fa-solid fa-check-circle"></i> Lunas: <span id="txnPaidBadge">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+                                <th class="p-3.5 rounded-l-xl">ID Order</th>
+                                <th class="p-3.5">Pelanggan</th>
+                                <th class="p-3.5">Items</th>
+                                <th class="p-3.5">Total Tagihan</th>
+                                <th class="p-3.5">Metode Bayar</th>
+                                <th class="p-3.5">Status Bayar</th>
+                                <th class="p-3.5 rounded-r-xl text-right">Aksi Kasir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTable" class="divide-y divide-gray-100 text-sm">
+                            <!-- Dynamic Transactions -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 5: PENGANTARAN DAN WHATSAPP GATEWAY -->
+        <div id="module-delivery" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Delivery Queue -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h2 class="text-xl font-bold text-gray-900 mb-1">Manajemen Pengantaran Kurir</h2>
+                    <p class="text-xs text-gray-500 mb-6">Kelola penugasan kurir Lazdano Express & lacak pengiriman pesanan.</p>
+
+                    <div id="deliveryCardsContainer" class="space-y-4">
+                        <!-- Dynamic Delivery Items -->
+                    </div>
+                </div>
+
+                <!-- WA Gateway Simulator Console -->
+                <div class="bg-gray-900 text-white p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-[600px]">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-emerald-500 rounded-full flex items-center justify-center text-white text-lg">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm">WhatsApp Gateway Log</h3>
+                                <p class="text-[10px] text-emerald-400 font-mono">API Connection: ONLINE</p>
+                            </div>
+                        </div>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+
+                    <!-- Phone Screen Mockup Container -->
+                    <div class="flex-1 my-4 bg-gray-950 rounded-xl p-4 overflow-y-auto font-mono text-xs space-y-3 scrollbar-thin" id="waLogConsole">
+                        <div class="text-gray-500 text-center text-[10px]">--- WhatsApp Gateway Service Started ---</div>
+                        <div class="bg-gray-900 border border-gray-800 p-3 rounded-lg text-emerald-300">
+                            <span class="text-[10px] text-gray-500 block">[SYSTEM INIT]</span>
+                            Bot Notifikasi Lazdano aktif. Siap mengirim pembaruan status pesanan via WhatsApp.
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-800 text-[11px] text-gray-400 flex justify-between items-center">
+                        <span>Pesan Otomatis Triggered</span>
+                        <button onclick="clearWaLogs()" class="text-gray-500 hover:text-white">Clear Console</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 6: MANAJEMEN PENGGUNA DAN PENGUJIAN -->
+        <div id="module-users" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- User Roles Table -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Manajemen Pengguna & Hak Akses</h2>
+                            <p class="text-xs text-gray-500">Daftar staf, kasir, kurir, dan pelanggan terdaftar.</p>
+                        </div>
+                        <button onclick="addUserModal()" class="bg-gray-900 text-white text-xs font-semibold px-3 py-2 rounded-xl hover:bg-gray-800">
+                            + Tambah User
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+                                    <th class="p-3">Pengguna</th>
+                                    <th class="p-3">Role / Jabatan</th>
+                                    <th class="p-3">Kontak / WA</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userRoleTable" class="divide-y divide-gray-100 text-sm">
+                                <!-- Dynamic Users -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Automated Test Suite Engine -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-vial text-red-600 text-lg"></i>
+                            <h2 class="text-lg font-bold text-gray-900">Automated E2E Testing</h2>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Uji otomatis seluruh modul: Tambah item, buat pesanan, verifikasi bayar, hingga notifikasi WA.</p>
+
+                        <button onclick="runSystemTestSuite()" id="btnRunTest" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md shadow-red-200 flex items-center justify-center gap-2 transition-all">
+                            <i class="fa-solid fa-play"></i> Jalankan Pengujian Otomatis
+                        </button>
+
+                        <div class="mt-6">
+                            <h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Log Pengujian (Test Results)</h4>
+                            <div id="testLogContainer" class="bg-gray-900 text-gray-200 p-3.5 rounded-xl font-mono text-xs h-64 overflow-y-auto space-y-2">
+                                <span class="text-gray-500 italic">Klik tombol di atas untuk memulai pengujian sistem...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between text-xs text-gray-500">
+                        <span>Status Pengujian: <strong id="testStatusLabel" class="text-gray-700">Belum Dijalankan</strong></span>
+                        <span id="testPassedCount" class="font-bold text-green-600">0 Passed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART SLIDE OVER / DRAWER -->
+    <div id="cartDrawer" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity">
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+            <!-- Cart Header -->
+            <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-basket-shopping text-red-600"></i>
+                    <h3 class="font-bold text-gray-900 text-lg">Keranjang Lazdano</h3>
+                </div>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cartItemsList" class="flex-1 overflow-y-auto p-5 space-y-4">
+                <!-- Cart items dynamic -->
+            </div>
+
+            <!-- Cart Footer / Checkout Form -->
+            <div class="p-5 border-t border-gray-200 bg-gray-50 space-y-3">
+                <div class="space-y-1.5 text-xs text-gray-600">
+                    <div class="flex justify-between">
+                        <span>Subtotal Menu</span>
+                        <span id="cartSubtotal" class="font-bold">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Ongkos Kirim (Flat)</span>
+                        <span id="cartDeliveryFee" class="font-bold">Rp 8.000</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-900 font-extrabold pt-2 border-t border-gray-200">
+                        <span>Total Bayar</span>
+                        <span id="cartGrandTotal" class="text-red-600">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="pt-2 space-y-2">
+                    <input type="text" id="custName" placeholder="Nama Lengkap Anda" class="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                    <input type="text" id="custPhone" placeholder="Nomor WhatsApp (Contoh: 08123456789)" class="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                    <input type="text" id="custAddress" placeholder="Alamat Lengkap Pengantaran" class="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500">
+                    
+                    <select id="custPayment" class="w-full text-xs p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500 bg-white">
+                        <option value="QRIS">QRIS / Instant E-Wallet</option>
+                        <option value="Transfer Bank">Transfer Bank BCA/BRI</option>
+                        <option value="COD">Bayar di Tempat (COD)</option>
+                    </select>
+                </div>
+
+                <button onclick="submitOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-red-200 transition-all mt-2">
+                    Konfirmasi & Pesan Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRODUCT (ADD / EDIT) -->
+    <div id="productModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-900 text-lg" id="productModalTitle">Tambah Menu Baru</h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)" class="space-y-3">
+                <input type="hidden" id="prodId">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Menu</label>
+                    <input type="text" id="prodName" required class="w-full text-sm p-2.5 border border-gray-300 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
+                    <select id="prodCategory" required class="w-full text-sm p-2.5 border border-gray-300 rounded-xl focus:outline-none focus:border-red-500">
+                        <option value="Geprek">Ayam Geprek</option>
+                        <option value="Crispy">Ayam Crispy</option>
+                        <option value="Sides">Ala Carte / Sides</option>
+                        <option value="Minuman">Minuman</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Harga (Rp)</label>
+                    <input type="number" id="prodPrice" required min="0" class="w-full text-sm p-2.5 border border-gray-300 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">URL Gambar (Opsional)</label>
+                    <input type="url" id="prodImage" placeholder="https://..." class="w-full text-sm p-2.5 border border-gray-300 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Deskripsi Singkat</label>
+                    <textarea id="prodDesc" rows="2" class="w-full text-sm p-2.5 border border-gray-300 rounded-xl focus:outline-none focus:border-red-500"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200">Batal</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 shadow-md">Simpan Menu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div><!-- /appShell -->
+
+    <!-- JavaScript External -->
+    <script src="script.js"></script>
+</body>
+</html>
